@@ -2,14 +2,16 @@ FROM alpine:3.9 as builder
 
 LABEL maintainer="metowolf <i@i-meto.com>"
 
-ARG PHP_VERSION=7.3.3
+ARG PHP_VERSION=7.3.4RC1
+ARG PHP_URL=https://downloads.php.net/~cmb/php-$PHP_VERSION.tar.xz
+ARG PHP_URL_ASC=https://downloads.php.net/~cmb/php-$PHP_VERSION.tar.xz.asc
 ARG GPG_KEYS=CBAF69F173A0FEA4B537F470D66C9593118BCCB6
 
 RUN apk add --no-cache gnupg1 curl \
   && mkdir -p /usr/src \
   && cd /usr/src \
-  && curl -fSL https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror -o php.tar.xz \
-  && curl -fSL https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror -o php.tar.xz.asc \
+  && curl -fSL $PHP_URL -o php.tar.xz \
+  && curl -fSL $PHP_URL_ASC -o php.tar.xz.asc \
   && export GNUPGHOME="$(mktemp -d)" \
   && found=''; \
   for server in \
@@ -98,7 +100,7 @@ RUN set -xe \
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
-ENV COMPOSER_VERSION 1.8.4
+ARG COMPOSER_VERSION=1.8.4
 
 RUN apk add --no-cache \
     libzip libzip-dev \
